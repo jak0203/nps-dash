@@ -1,0 +1,53 @@
+
+import React, { Component } from 'react'
+import { scaleBand, scaleLinear } from 'd3-scale'
+import Axes from './Axes';
+import Bars from './Bars';
+
+
+class Chart extends Component {
+  constructor() {
+    super();
+    // scaleBand domain should be an array of specific values
+    this.yScale = scaleBand();
+    // scaleLinear domain required at least two values, min and max
+    this.xScale = scaleLinear();
+  }
+
+  render() {
+    let { nps_data }= this.props;
+
+    const margins = { top: 20, right: 20, bottom: 10, left: 150 };
+    const svgDimensions = { width: this.props.width, height: this.props.height };
+
+    const maxValue = 100;
+
+    const xScale = this.xScale
+        .domain([0, maxValue])
+      .range([margins.left, svgDimensions.width - margins.right]);
+
+    const yScale = this.yScale
+      .padding(0.5)
+      .domain(nps_data.map(d => d.segment))
+      .range([svgDimensions.height - margins.bottom, margins.top]);
+
+    return (
+      <svg width={svgDimensions.width} height={svgDimensions.height}>
+        <Axes
+          scales={{ xScale, yScale }}
+          margins={margins}
+          svgDimensions={svgDimensions}
+        />
+        <Bars
+          scales={{ xScale, yScale }}
+          margins={margins}
+          data={nps_data}
+          maxValue={maxValue}
+          svgDimensions={svgDimensions}
+        />
+      </svg>
+    )
+  }
+}
+
+export default Chart;
