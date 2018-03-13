@@ -19,7 +19,7 @@ from django.conf.urls import url, include
 from rest_framework.authtoken import views as drf_views
 from django.contrib.auth.decorators import login_required
 from . import views
-from nps.views import survey_data, SurveyViewset, client_data
+from nps.views import survey_data, SurveyViewset, client_data, product_data
 from rest_framework import routers
 
 
@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^dashboard/', login_required(views.ReactAppView.as_view(), login_url='/admin/login')),
     url(r'^survey/', survey_data),
     url(r'^client_data/', client_data),
+    url(r'^product_data/', product_data),
     url(r'^', include(router.urls)),
 
 ]
