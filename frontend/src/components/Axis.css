@@ -4,8 +4,9 @@
 }
 
 .Axis text {
-  font-size: 11px;
+  font-size: 12px;
   fill: black;
+  font-weight: bold;
 }
 
 .Axis-Bottom text {

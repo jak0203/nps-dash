@@ -4,7 +4,6 @@ import { scaleBand, scaleLinear } from 'd3-scale'
 import Axes from './Axes';
 import Bars from './Bars';
 
-
 class Chart extends Component {
   constructor() {
     super();
@@ -17,13 +16,13 @@ class Chart extends Component {
   render() {
     let { nps_data }= this.props;
 
-    const margins = { top: 20, right: 20, bottom: 10, left: 150 };
+    const margins = { top: 20, right: 20, bottom: 50, left: 110 };
     const svgDimensions = { width: this.props.width, height: this.props.height };
 
     const maxValue = 100;
 
     const xScale = this.xScale
-        .domain([0, maxValue])
+      .domain([-100, 100])
       .range([margins.left, svgDimensions.width - margins.right]);
 
     const yScale = this.yScale
@@ -42,7 +41,6 @@ class Chart extends Component {
           scales={{ xScale, yScale }}
           margins={margins}
           data={nps_data}
-          maxValue={maxValue}
           svgDimensions={svgDimensions}
         />
       </svg>

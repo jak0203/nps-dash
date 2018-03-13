@@ -40,6 +40,7 @@ class App extends Component {
     client_data_2018: [],
     client_data_2017: [],
     client_data_2016: [],
+    product_data_dna: [],
 
   };
 
@@ -65,6 +66,11 @@ class App extends Component {
         console.log(res);
         this.setState({client_data_2016: res.data});
       });
+    axios.get('/product_data?product=dna')
+      .then(res => {
+        console.log(res.data)
+        this.setState({product_data_dna: res.data})
+      });
 
   }
 
@@ -81,24 +87,11 @@ class App extends Component {
             </Toolbar>
           </AppBar>
         </div>
+
         <div>
           <Grid container>
             <Grid item>
-              <Chart nps_data={this.state.nps_data} width={800} height={300}/>
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item>
-              <Typography variant={'title'} color={'inherit'}>2016</Typography>
-              <Chart nps_data={this.state.client_data_2016} width={250} height={1500}/>
-            </Grid>
-            <Grid item>
-              <Typography variant={'title'} color={'inherit'}>Nov 2017</Typography>
-              <Chart nps_data={this.state.client_data_2017} width={250} height={500}/>
-            </Grid>
-            <Grid item>
-              <Typography variant={'title'} color={'inherit'}>Feb 2018</Typography>
-              <Chart nps_data={this.state.client_data_2018} width={250} height={500}/>
+              <Chart nps_data={this.state.product_data_dna} width={800} height={400}/>
             </Grid>
           </Grid>
         </div>
@@ -113,8 +106,3 @@ App.propTypes = {
 };
 
 export default withStyles(styles, {withTheme: true})(App);
-// export default withStyles(styles, {withTheme: true})(
-//   withRouter(connect(
-//     mapStateToProps,
-//     mapDispatchToProps
-//   )(App)));
