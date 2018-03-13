@@ -81,3 +81,33 @@ class SurveyAggregations(models.Model):
     total_clients = models.IntegerField()
 
     nps_score = models.FloatField(null=True, blank=True, default=None)
+
+
+class Products(models.Model):
+    client = models.CharField(max_length=30)
+    products = models.CharField(max_length=30)
+
+
+class ProductAggregations(models.Model):
+    survey_name = models.CharField(max_length=200)
+    products = models.CharField(max_length=30)
+
+    total_responses = models.IntegerField()
+    total_promoters = models.IntegerField()
+    percent_promoters = models.FloatField(null=True, blank=True, default=None)
+    total_detractors = models.IntegerField()
+    percent_detractors = models.FloatField(null=True, blank=True, default=None)
+    total_neutral = models.IntegerField()
+    percent_neutral = models.FloatField(null=True, blank=True, default=None)
+
+    number_clients_positive = models.IntegerField()
+    percent_clients_positive = models.FloatField(null=True, blank=True, default=None)
+    number_clients_negative = models.IntegerField()
+    percent_clients_negative = models.FloatField(null=True, blank=True, default=None)
+    number_clients_neutral = models.IntegerField()
+    percent_clients_neutral = models.FloatField(null=True, blank=True, default=None)
+    total_clients = models.IntegerField()
+
+    nps_score = models.FloatField(null=True, blank=True, default=None)
+
+

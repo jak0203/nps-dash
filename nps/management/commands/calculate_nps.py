@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from nps.models import RawResults, AggregatedResults, SurveyAggregations
+from nps.models import RawResults, AggregatedResults, SurveyAggregations, ProductAggregations
 
 
 STATISTICAL_SIGNIFICANCE = 30
@@ -17,8 +17,14 @@ class Command(BaseCommand):
         # do the aggregations
         print('doing aggregations')
         for survey in RawResults.objects.values('survey_name').distinct():
+            if survey['survey_name'] == 'Test Survey':
+                s = '2016 April'
+            elif '2017' in survey['survey_name']:
+                s = '2017 November'
+            elif '2018' in survey['survey_name']:
+                s = '2018 February'
             survey_results = {
-                'survey_name': survey['survey_name'],
+                'survey_name': s,
                 'total_responses': 0,
                 'total_promoters': 0,
                 'total_detractors': 0,
@@ -34,7 +40,7 @@ class Command(BaseCommand):
                     question_name='recommend'
                 ).distinct())
                 score['client'] = client['client']
-                score['survey'] = survey['survey_name']
+                score['survey'] = s
                 if score['total_responses'] >= STATISTICAL_SIGNIFICANCE:
                     score['statistically_significant'] = True
                     survey_results['total_clients'] += 1
@@ -51,7 +57,8 @@ class Command(BaseCommand):
                 survey_results['total_promoters'] += score['total_promoters']
                 survey_results['total_detractors'] += score['total_detractors']
                 survey_results['total_neutral'] += score['total_neutral']
-            survey_results['nps_score'] = (survey_results['total_promoters'] - survey_results['total_detractors']) / survey_results['total_responses'] * 100
+
+            survey_results['nps_score'] = round((survey_results['total_promoters'] - survey_results['total_detractors']) / survey_results['total_responses'] * 100, 2)
             survey_results['percent_promoters'] = survey_results['total_promoters']/survey_results['total_responses'] * 100
             survey_results['percent_detractors'] = survey_results['total_detractors'] / survey_results['total_responses'] * 100
             survey_results['percent_neutral'] = survey_results['total_neutral'] / survey_results['total_responses'] * 100
@@ -64,7 +71,6 @@ class Command(BaseCommand):
             s.save()
 
     def nps(self, data):
-        # print('inside aggregate data', data)
         promoters = 0
         detractors = 0
         neutral = 0
@@ -84,7 +90,7 @@ class Command(BaseCommand):
             score = 0
             print(data.values())
         else:
-            score = (promoters - detractors) / total * 100
+            score = round((promoters - detractors) / total * 100, 2)
         return {
             'total_promoters': promoters,
             'total_detractors': detractors,
