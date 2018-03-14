@@ -110,4 +110,9 @@ class ProductAggregations(models.Model):
 
     nps_score = models.FloatField(null=True, blank=True, default=None)
 
-
+class ProductUsers(models.Model):
+    survey_name = models.CharField(max_length=200)
+    academic_year = models.IntegerField()
+    user_id = models.IntegerField()
+    client = models.CharField(max_length=30)
+    can_teach = models.BooleanField()
