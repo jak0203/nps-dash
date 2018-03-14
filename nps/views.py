@@ -56,6 +56,24 @@ def product_data(request):
     list_result = [entry for entry in result]
     return JsonResponse(list_result, safe=False)
 
+
+@require_http_methods(['GET'])
+@csrf_exempt
+def products(request):
+    result = ProductAggregations.objects.values('products').distinct()
+    list_result = []
+    for entry in result:
+        e = entry['products']
+        r = {
+            'value': e,
+            'display': ' & '.join([e[i:i+3] for i in range(0, len(e), 3)]).upper()
+        }
+        list_result.append(r)
+    # list_result = [entry for entry in result]
+    return JsonResponse(list_result, safe=False)
+
+
+
 class SurveyViewset(viewsets.ModelViewSet):
     queryset = SurveyAggregations.objects.all()
     serializer_class = SurveyAggregationsSerializer

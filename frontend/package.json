@@ -20,8 +20,11 @@
     "react": "^16.2.0",
     "react-d3-tooltip": "^1.4.14",
     "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
     "react-scripts": "1.1.1",
-    "react-tooltip": "^3.4.0"
+    "react-tooltip": "^3.4.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -29,5 +32,4 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
-
 }
