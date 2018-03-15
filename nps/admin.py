@@ -1,8 +1,8 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from .models import RawResults, AggregatedResults, Comments, CommentCategories, CommentAnalysis, Products, ProductUsers
+from .models import RawResults, ClientAggregations, Comments, CommentCategories, CommentAnalysis, Products
 
-admin.site.register(AggregatedResults)
+admin.site.register(ClientAggregations)
 admin.site.register(Comments)
 admin.site.register(CommentCategories)
 admin.site.register(CommentAnalysis)
@@ -17,6 +17,3 @@ class RawResultsAdmin(ImportExportModelAdmin):
 class ProductsAdmin(ImportExportModelAdmin):
     pass
 
-@admin.register(ProductUsers)
-class ProductUsers(ImportExportModelAdmin):
-    pass
