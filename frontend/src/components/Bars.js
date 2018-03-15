@@ -2,10 +2,6 @@ import React, {Component} from 'react'
 
 
 export default class Bars extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
 
     const {scales, margins, data, svgDimensions} = this.props;
@@ -15,11 +11,11 @@ export default class Bars extends Component {
     const detractorBars = (
       data.map(datum =>
         <rect
-          key={datum.segment + 'detractor'}
-          x={xScale(-datum.detractors - 0.5 * datum.neutral)}
-          y={yScale(datum.segment)}
+          key={datum.survey + 'detractor'}
+          x={xScale(-datum.percent_detractors - 0.5 * datum.percent_neutral)}
+          y={yScale(datum.survey)}
           height={yScale.bandwidth()}
-          width={datum.detractors * (width - margins.left)/200}
+          width={datum.percent_detractors * (width - margins.left)/200}
           fill={'#F44336'}
         />,
       )
@@ -27,11 +23,11 @@ export default class Bars extends Component {
     const neutralBars = (
       data.map(datum =>
         <rect
-          key={datum.segment + 'neutral'}
-          x={xScale(-0.5*datum.neutral)}
-          y={yScale(datum.segment)}
+          key={datum.survey + 'neutral'}
+          x={xScale(-0.5*datum.percent_neutral)}
+          y={yScale(datum.survey)}
           height={yScale.bandwidth()}
-          width={datum.neutral * (width - margins.left)/200}
+          width={datum.percent_neutral * (width - margins.left)/200}
           fill={'#9E9E9E'}
         />
       )
@@ -39,11 +35,11 @@ export default class Bars extends Component {
     const promoterBars = (
       data.map(datum =>
         <rect
-          key={datum.segment + 'promoter'}
-          x={xScale(0.5*datum.neutral)}
-          y={yScale(datum.segment)}
+          key={datum.survey + 'promoter'}
+          x={xScale(0.5*datum.percent_neutral)}
+          y={yScale(datum.survey)}
           height={yScale.bandwidth()}
-          width={datum.promoters * (width - margins.left)/200}
+          width={datum.percent_promoters * (width - margins.left)/200}
           fill={'#4CAF50'}
         />
       )
@@ -52,9 +48,9 @@ export default class Bars extends Component {
       data.map(datum =>
         <circle
           fill="white"
-          key={datum.segment + 'npscircle'}
+          key={datum.survey + 'npscircle'}
           cx={xScale(datum.nps_score)}
-          cy={yScale(datum.segment) + 0.5 * yScale.bandwidth()}
+          cy={yScale(datum.survey) + 0.5 * yScale.bandwidth()}
           r={0.4 * yScale.bandwidth()}
         />
       )
@@ -62,9 +58,9 @@ export default class Bars extends Component {
     const npsText = (
       data.map(datum =>
         <text
-          key={datum.segment + 'npsscore'}
+          key={datum.survey + 'npsscore'}
           x={xScale(datum.nps_score)}
-          y={yScale(datum.segment) + 0.6 * yScale.bandwidth()}
+          y={yScale(datum.survey) + 0.6 * yScale.bandwidth()}
           textAnchor={"middle"}
           fontSize={11}
         >{datum.nps_score}</text>

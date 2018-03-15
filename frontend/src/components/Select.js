@@ -5,7 +5,7 @@ import { InputLabel } from 'material-ui/Input';
 import { MenuItem } from 'material-ui/Menu';
 import { FormControl } from 'material-ui/Form';
 import Select from 'material-ui/Select';
-import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
 
 import {connect} from 'react-redux';
 import {selectHandleChange} from '../actions/select';
@@ -37,28 +37,37 @@ class ControlledOpenSelect extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { menuList } = this.props;
+    const {
+      menuList,
+      instructions,
+      name,
+      include_none,
+      val
+    } = this.props;
+
     return (
       <form autoComplete="off">
-        <Button className={classes.button} onClick={this.handleOpen}>
-          Select the Dataset to View
-        </Button>
+        <Typography variant={'subheading'}>
+          { instructions }
+        </Typography>
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="controlled-open-select"></InputLabel>
           <Select
             open={this.state.open}
             onClose={this.handleClose}
             onOpen={this.handleOpen}
-            value={this.props.productSelect.product}
+            value={val}
             onChange={this.props.selectHandleChange}
             inputProps={{
-              name: 'Product',
+              name: name,
               id: 'controlled-open-select',
             }}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
+            {(include_none) ?
+              <MenuItem value=''>
+                <em>None</em>
+              </MenuItem> : null
+            }
             {menuList.map( ({value, display}) => {
               return(
                 <MenuItem key={value} value={value}>{display}</MenuItem>

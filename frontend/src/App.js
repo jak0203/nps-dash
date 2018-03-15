@@ -9,10 +9,11 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import Chart from './components/HorizontalStackedBarChart';
 import axios from 'axios';
+import SimpleTable from './components/Table';
+import Paper from 'material-ui/Paper';
 
 import Grid from 'material-ui/Grid';
 import ControlledOpenSelect from './components/Select';
-import {bindActionCreators} from "redux";
 
 const theme = createMuiTheme({
   palette: {
@@ -35,58 +36,72 @@ const styles = {
   root: {
     flexGrow: 1,
   },
+  generalPaper: {
+    marginLeft: 10,
+    paddingTop: 15,
+    paddingLeft: 10,
+  },
+  tablePaper: {
+    marginLeft: 110,
+  }
 };
 
 class App extends Component {
   state = {
-    nps_data: [],
-    client_data_2018: [],
-    client_data_2017: [],
-    client_data_2016: [],
-    product_data_dna: [],
+    data: [],
     products: [],
-
+    user_types: [],
+    display_nps_chart: true
   };
 
   componentWillUpdate = (nextProps, nextState) => {
-    if (this.props.productSelect.product != nextProps.productSelect.product) {
-      let get_url = '/product_data?product='+nextProps.productSelect.product
-      axios.get(get_url)
-        .then(res => {
-        console.log(res.data),
-        this.setState({product_data_dna: res.data})
-      });
+    console.log('component will update');
+    if (
+      (this.props.dataSelect.product !== nextProps.dataSelect.product) ||
+      (this.props.dataSelect.user_type !== nextProps.dataSelect.user_type)
+    ) {
+      if (nextProps.dataSelect.product === '') {
+        // Get data from the surveys endpoint
+        const get_url = '/survey?users=' + nextProps.dataSelect.user_type;
+        console.log(get_url);
+        axios.get(get_url)
+          .then(res => {
+            console.log(res.data);
+            this.setState({data: res.data});
+          })
+      }
+      // get data from the products endpoint
+      else {
+        const get_url = '/product_data?product=' + nextProps.dataSelect.product +
+          '&users=' + nextProps.dataSelect.user_type;
+        console.log(get_url);
+        axios.get(get_url)
+          .then(res => {
+            console.log(res.data);
+            this.setState({data: res.data});
+          })
+      }
     }
-  };
+  }
 
   componentWillMount() {
-    axios.get('/survey')
+    console.log('component will mount');
+    // Get initial data - survey with no selections
+    axios.get('/survey?users=all')
       .then(res => {
         console.log(res);
-        this.setState({product_data_dna: res.data});
+        this.setState({data: res.data});
       });
-
+    // Get list of products for select purposes
     axios.get('/products')
       .then(res => {
-        console.log(res);
         this.setState({products: res.data});
       });
-    // axios.get('/client_data?survey=November%202017%20NPS%20Survey')
-    //   .then(res => {
-    //     console.log(res);
-    //     this.setState({client_data_2017: res.data});
-    //   });
-    // axios.get('/client_data?survey=Test%20Survey')
-    //   .then(res => {
-    //     console.log(res);
-    //     this.setState({client_data_2016: res.data});
-    //   });
-    // axios.get('/product_data?product=dna')
-    //   .then(res => {
-    //     console.log(res.data)
-    //     this.setState({product_data_dna: res.data})
-    //   });
-
+    //Get list of user types for select purposes
+    axios.get('/user_types')
+      .then(res => {
+        this.setState({user_types: res.data});
+      })
   }
 
   render() {
@@ -105,31 +120,56 @@ class App extends Component {
 
         <div>
           <Grid container>
-
-            <Grid item xs={6}>
-              <Chart nps_data={this.state.product_data_dna} width={800} height={400}/>
-            </Grid>
-            <Grid item xs={3}>
-              <ControlledOpenSelect
-                menuList={this.state.products}
-              />
-            </Grid>
+              <Grid container className={classes.generalPaper}>
+                <Grid container className={classes.generalPaper}>
+                <Typography variant={'headline'}>Survey Comparisons</Typography>
+                </Grid>
+                {(this.state.display_nps_chart) ?
+                <Grid item xs={6} className={classes.generalPaper}>
+                  <Chart nps_data={this.state.data} width={800} height={300}/>
+                </Grid>
+                  :null }
+                <Grid item xs={2} className={classes.generalPaper}>
+                  <ControlledOpenSelect
+                    menuList={this.state.products}
+                    instructions={'Select the Product to View'}
+                    name='product'
+                    include_none={true}
+                    val={this.props.dataSelect.product}
+                  />
+                </Grid>
+                <Grid item xs={2} className={classes.generalPaper}>
+                  <ControlledOpenSelect
+                    menuList={this.state.user_types}
+                    instructions={'Select the user types to View'}
+                    name='user'
+                    include_none={false}
+                    val={this.props.dataSelect.user_type}
+                  />
+                </Grid>
+              </Grid>
+              <Grid container className={classes.generalPaper}>
+                <Paper className={classes.tablePaper}>
+                <SimpleTable
+                  data={this.state.data}
+                />
+                </Paper>
+              </Grid>
           </Grid>
         </div>
       </MuiThemeProvider>
     );
   }
 }
+
 function mapStateToProps(state) {
   return {
-    productSelect: state.productSelect,
+    dataSelect: state.dataSelect,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {
-
-  }
+  return {}
 }
 
 App.propTypes = {
@@ -138,10 +178,4 @@ App.propTypes = {
 };
 
 
-
 export default withStyles(styles, {withTheme: true})(connect(mapStateToProps, mapDispatchToProps)(App));
-// export default withStyles(styles, {withTheme: true})(
-//   connect(
-//     mapStateToProps,
-//     mapDispatchToProps
-//   )(App));

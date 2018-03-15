@@ -1,7 +1,7 @@
 
 import {combineReducers} from 'redux'
-import {productSelect} from './select';
+import {dataSelect} from './select';
 
 export default combineReducers({
-  productSelect,
+  dataSelect,
 });
