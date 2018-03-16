@@ -91,6 +91,16 @@ class ProductAggregations(models.Model):
     percent_clients_negative = models.FloatField(null=True, blank=True, default=None)
 
 
+class ClientDeltas(models.Model):
+    client = models.CharField(max_length=30)
+    survey = models.CharField(max_length=30)
+    products = models.CharField(max_length=30)
+    nps_score = models.FloatField(null=True, blank=True, default=None)
+    delta_from_2016 = models.FloatField(null=True, blank=True, default=None)
+    user_type = models.CharField(max_length=30, null=True, blank=True, default=None)
+    statistically_significant_delta = models.BooleanField(default=False)
+
+
 class Comments(models.Model):
     client = models.CharField(max_length=200)
     survey_name = models.CharField(max_length=200)

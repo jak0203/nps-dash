@@ -4,9 +4,9 @@ from nps.models import RawResults, ClientAggregations, SurveyAggregations
 # these variables are also imported into calculate_nps_product.py
 STATISTICAL_SIGNIFICANCE = 30
 SURVEYS = {
-    'February 2018 NPS Survey': 'February 2018',
-    'Test Survey': 'April 2016',
-    'November 2017 NPS Survey': 'November 2017',
+    'February 2018 NPS Survey': '2018 February',
+    'Test Survey': '2016 April',
+    'November 2017 NPS Survey': '2017 November',
 }
 USER_TYPES = {
     'teacher': True,
