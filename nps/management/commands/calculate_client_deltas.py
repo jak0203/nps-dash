@@ -12,7 +12,7 @@ class Command(BaseCommand):
         ClientDeltas.objects.all().delete()
 
         for survey_raw_name, survey_clean_name in SURVEYS.items():
-            for user_type in (list(USER_TYPES.keys()) + ['all']):
+            for user_type in USER_TYPES:
                 for client in ClientAggregations.objects.filter(
                         survey=survey_clean_name,
                         user_type=user_type,

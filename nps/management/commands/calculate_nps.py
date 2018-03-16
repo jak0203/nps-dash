@@ -8,10 +8,7 @@ SURVEYS = {
     'Test Survey': '2016 April',
     'November 2017 NPS Survey': '2017 November',
 }
-USER_TYPES = {
-    'teacher': True,
-    'non-teacher': False
-}
+USER_TYPES = ['teacher', 'non-teacher', 'all']
 COUNT_TYPES = ['total_responses', 'promoters', 'detractors', 'neutral']
 
 
@@ -29,9 +26,9 @@ def nps_counts(data):
     totals = {}
 
     for record in data:
-        if int(record.response) in [9, 10]:
+        if int(record.recommend_response) in [9, 10]:
             promoters += 1
-        elif int(record.response) in [0, 1, 2, 3, 4, 5, 6]:
+        elif int(record.recommend_response) in [0, 1, 2, 3, 4, 5, 6]:
             detractors += 1
         else:
             neutral += 1
@@ -104,20 +101,8 @@ class Command(BaseCommand):
 
         # get list of surveys
         for survey_raw_name, survey_clean_name in SURVEYS.items():
-            survey_results_raw = {
-                'all': {
-                    'survey': survey_clean_name,
-                    'user_type': 'all',
-                    'total_responses': 0,
-                    'promoters': 0,
-                    'detractors': 0,
-                    'neutral': 0,
-                    'num_clients_positive': 0,
-                    'num_clients_negative': 0,
-                    'total_clients': 0,
-                }
-            }
-            for user_type in USER_TYPES.keys():
+            survey_results_raw = {}
+            for user_type in USER_TYPES:
                 survey_results_raw[user_type] = {
                     'survey': survey_clean_name,
                     'user_type': user_type,
@@ -130,31 +115,36 @@ class Command(BaseCommand):
                     'total_clients': 0,
                 }
             for client in RawResults.objects.filter(survey_name=survey_raw_name).values('client').distinct():
-                client_results_raw = {
-                    'client': client['client'],
-                    'survey': survey_clean_name,
-                    'user_type': 'all',
-                    'total_responses': 0,
-                    'promoters': 0,
-                    'detractors': 0,
-                    'neutral': 0,
-                }
-                for user_type, can_teach in USER_TYPES.items():
-                    print(survey_raw_name, client)
-                    querycount = RawResults.objects.filter(
-                        survey_name=survey_raw_name,
-                        client=client['client'],
-                        can_teach=can_teach,
-                        question_name='recommend'
-                    ).distinct().count()
+                for user_type in USER_TYPES:
+                    print(survey_raw_name, client, user_type)
+                    # Determine if there are any results to aggregate
+                    if user_type == 'all':
+                        querycount = RawResults.objects.filter(
+                            survey_name=survey_raw_name,
+                            client=client['client']
+                        ).distinct().count()
+                    else:
+                        querycount = RawResults.objects.filter(
+                            survey_name=survey_raw_name,
+                            client=client['client'],
+                            user_type=user_type
+                        ).distinct().count()
                     if querycount == 0:
+                        print('no results, moving on')
                         continue
-                    user_results_raw = nps_counts(RawResults.objects.filter(
-                        survey_name=survey_raw_name,
-                        client=client['client'],
-                        can_teach=can_teach,
-                        question_name='recommend'
-                    ).distinct())
+
+                    if user_type == 'all':
+                        user_results_raw = nps_counts(RawResults.objects.filter(
+                            survey_name=survey_raw_name,
+                            client=client['client'],
+                        ).distinct())
+                    else:
+                        user_results_raw = nps_counts(RawResults.objects.filter(
+                            survey_name=survey_raw_name,
+                            client=client['client'],
+                            user_type=user_type
+                        ).distinct())
+
                     user_results_percentages = calculate_percentages(user_results_raw)
                     user_results = {
                         'survey': survey_clean_name,
@@ -166,10 +156,10 @@ class Command(BaseCommand):
                     }
                     r = ClientAggregations(**user_results)
                     r.save()
+
                     # add results to total
                     for count_type in COUNT_TYPES:
                         survey_results_raw[user_type][count_type] += user_results[count_type]
-                        client_results_raw[count_type] += user_results[count_type]
 
                     if user_results['statistically_significant'] is True:
                         survey_results_raw[user_type]['total_clients'] += 1
@@ -178,27 +168,7 @@ class Command(BaseCommand):
                         else:
                             survey_results_raw[user_type]['num_clients_negative'] += 1
 
-                client_results_percentages = calculate_percentages(client_results_raw)
-                client_results = {
-                    **client_results_raw,
-                    **client_results_percentages,
-                    'nps_score': nps(client_results_raw),
-                    'statistically_significant': statistically_significant(client_results_raw['total_responses'])
-                }
-                r = ClientAggregations(**client_results)
-                r.save()
-
-                for count_type in COUNT_TYPES:
-                    survey_results_raw['all'][count_type] += client_results[count_type]
-
-                if client_results['statistically_significant'] is True:
-                    survey_results_raw['all']['total_clients'] += 1
-                    if client_results['nps_score'] >= 0:
-                        survey_results_raw['all']['num_clients_positive'] += 1
-                    else:
-                        survey_results_raw['all']['num_clients_negative'] += 1
-
-            for user_type in USER_TYPES.keys():
+            for user_type in USER_TYPES:
                 survey_results = {
                     **survey_results_raw[user_type],
                     'nps_score': nps(survey_results_raw[user_type]),
@@ -207,15 +177,6 @@ class Command(BaseCommand):
                 }
                 r = SurveyAggregations(**survey_results)
                 r.save()
-            survey_results = {
-                **survey_results_raw['all'],
-                'nps_score': nps(survey_results_raw['all']),
-                **calculate_percentages(survey_results_raw['all']),
-                **calculate_client_percentages(survey_results_raw['all']),
-            }
-            r = SurveyAggregations(**survey_results)
-            r.save()
-
 
 
 

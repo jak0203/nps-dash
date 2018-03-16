@@ -11,14 +11,18 @@ SENTIMENTCHOICES = (
 class RawResults(models.Model):
     client = models.CharField(max_length=200)
     survey_name = models.CharField(max_length=200)
-    question_type = models.CharField(max_length=30)
-    question_name = models.CharField(max_length=30)
+    survey_start_date = models.DateField(null=True)
+    survey_end_date = models.DateField(null=True)
+    recommend_default_value = models.IntegerField(null=True)
     user_id = models.IntegerField()
-    response = models.CharField(max_length=500)
-    can_teach = models.BooleanField(default=False)
+    role_name = models.CharField(max_length=500, null=True)
+    user_type = models.CharField(max_length=30, null=True)
+    recommend_response = models.IntegerField(null=True)
+    contact_response = models.NullBooleanField()
+    reason_response = models.CharField(max_length=500, null=True)
 
     class Meta:
-        unique_together = ('client', 'survey_name', 'question_name', 'user_id', 'response')
+        unique_together = ('client', 'survey_name', 'user_id', 'recommend_response', 'reason_response')
 
 
 class ClientAggregations(models.Model):

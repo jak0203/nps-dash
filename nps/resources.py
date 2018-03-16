@@ -17,7 +17,7 @@ class RawResultsResource(resources.ModelResource):
 
     class Meta:
         model = RawResults
-        import_id_fields = ('client', 'survey_name', 'question_name', 'user_id')
+        import_id_fields = ('client', 'survey_name', 'user_id', 'recommend_response')
         skip_unchanged = True
         report_skipped = True
 

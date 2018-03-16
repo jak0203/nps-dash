@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
         for survey_raw_name, survey_clean_name in SURVEYS.items():
             for product in products:
-                for user_type in (list(USER_TYPES.keys()) + ['all']):
+                for user_type in USER_TYPES:
                     product_results_raw = {
                         'survey': survey_clean_name,
                         'user_type': user_type,
@@ -30,7 +30,7 @@ class Command(BaseCommand):
                         'total_clients': 0,
                     }
 
-                    print(survey_raw_name, user_type)
+                    print(product, survey_raw_name, user_type)
                     for client in ClientAggregations.objects.filter(
                         survey=survey_clean_name,
                         user_type=user_type,
