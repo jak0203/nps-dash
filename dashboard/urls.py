@@ -19,7 +19,7 @@ from django.conf.urls import url, include
 from rest_framework.authtoken import views as drf_views
 from django.contrib.auth.decorators import login_required
 from . import views
-from nps.views import survey_data, SurveyViewset, client_data, product_data, products, user_types
+from nps.views import survey_data, SurveyViewset, client_data, product_data, products, user_types, client_deltas
 from rest_framework import routers
 
 
@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^product_data/', product_data),
     url(r'^products/', products),
     url(r'^user_types/', user_types),
+    url(r'^client_deltas/', client_deltas),
     url(r'^', include(router.urls)),
 
 ]

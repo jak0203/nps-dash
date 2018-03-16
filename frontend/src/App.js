@@ -14,6 +14,7 @@ import Paper from 'material-ui/Paper';
 
 import Grid from 'material-ui/Grid';
 import ControlledOpenSelect from './components/Select';
+import ClientChart from './components/ClientAnalysisChart';
 
 const theme = createMuiTheme({
   palette: {
@@ -40,6 +41,7 @@ const styles = {
     marginLeft: 10,
     paddingTop: 15,
     paddingLeft: 10,
+    marginTop: 10,
   },
   tablePaper: {
     marginLeft: 110,
@@ -51,7 +53,9 @@ class App extends Component {
     data: [],
     products: [],
     user_types: [],
-    display_nps_chart: true
+    display_nps_chart: true,
+    client_data: [],
+    display_client_chart: true,
   };
 
   componentWillUpdate = (nextProps, nextState) => {
@@ -82,7 +86,7 @@ class App extends Component {
           })
       }
     }
-  }
+  };
 
   componentWillMount() {
     console.log('component will mount');
@@ -101,7 +105,11 @@ class App extends Component {
     axios.get('/user_types')
       .then(res => {
         this.setState({user_types: res.data});
-      })
+      });
+    axios.get('/client_deltas?survey=2018%20February&users=all')
+      .then(res=> {
+        this.setState({client_data: res.data});
+      });
   }
 
   render() {
@@ -155,6 +163,19 @@ class App extends Component {
                 />
                 </Paper>
               </Grid>
+              <Grid container className={classes.generalPaper}>
+                <Grid container className={classes.generalPaper}>
+                <Typography variant={'headline'}>Client Comparisons</Typography>
+                </Grid>
+
+                <ClientChart
+                  data={this.state.client_data}
+                  width={1200}
+                  height={500}
+                  yaxis={this.state.products}
+                />
+              </Grid>
+
           </Grid>
         </div>
       </MuiThemeProvider>

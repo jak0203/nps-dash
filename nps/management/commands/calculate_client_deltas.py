@@ -12,14 +12,14 @@ class Command(BaseCommand):
         ClientDeltas.objects.all().delete()
 
         for survey_raw_name, survey_clean_name in SURVEYS.items():
-            for user_type in USER_TYPES.keys():
+            for user_type in (list(USER_TYPES.keys()) + ['all']):
                 for client in ClientAggregations.objects.filter(
                         survey=survey_clean_name,
                         user_type=user_type,
                         statistically_significant=True,
                 ).values():
                     p = Products.objects.filter(client=client['client']).values('products')
-                    print(client['client'], p[0])
+                    print(client['client'], p)
                     results = {
                         'client': client['client'],
                         'nps_score': client['nps_score'],
@@ -32,7 +32,7 @@ class Command(BaseCommand):
                             survey='2016 April', user_type=user_type, client=client['client']
                         ).values()
                         if nps_2016.count() > 0:
-                            results['delta_from_2016'] = results['nps_score'] - nps_2016[0]['nps_score']
+                            results['delta_from_2016'] = round(results['nps_score'] - nps_2016[0]['nps_score'], 2)
                             if (nps_2016[0]['statistically_significant'] >= STATISTICAL_SIGNIFICANCE) and (
                                     client['statistically_signficant'] >= STATISTICAL_SIGNIFICANCE):
                                 results['statistically_significant'] = True

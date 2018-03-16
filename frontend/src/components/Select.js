@@ -87,7 +87,7 @@ ControlledOpenSelect.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    productSelect: state.productSelect,
+    dataSelect: state.dataSelect,
   }
 }
 

@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react'
 import { scaleBand, scaleLinear } from 'd3-scale'
 import Axes from './Axes';

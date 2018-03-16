@@ -2,7 +2,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import SurveyAggregations, ClientAggregations, ProductAggregations
+from .models import SurveyAggregations, ClientAggregations, ProductAggregations, ClientDeltas
 from .serializers import SurveyAggregationsSerializer
 from rest_framework import viewsets
 
@@ -44,6 +44,17 @@ def client_data(request):
     }
     result = ClientAggregations.objects.filter(survey=survey, statistically_significant=True).order_by('-segment').extra(mapping).values(
         'segment', 'promoters', 'neutral', 'detractors', 'nps_score')
+    list_result = [entry for entry in result]
+    return JsonResponse(list_result, safe=False)
+
+
+@require_http_methods(['GET'])
+@csrf_exempt
+def client_deltas(request):
+    survey = request.GET.get('survey')
+    user_type = request.GET.get('users')
+
+    result = ClientDeltas.objects.filter(survey=survey, user_type=user_type).order_by('delta_from_2016').values()
     list_result = [entry for entry in result]
     return JsonResponse(list_result, safe=False)
 

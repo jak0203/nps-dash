@@ -31,7 +31,7 @@ def nps_counts(data):
     for record in data:
         if int(record.response) in [9, 10]:
             promoters += 1
-        elif int(record.response) in [1, 2, 3, 4, 5, 6]:
+        elif int(record.response) in [0, 1, 2, 3, 4, 5, 6]:
             detractors += 1
         else:
             neutral += 1
