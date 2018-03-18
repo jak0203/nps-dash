@@ -15,6 +15,9 @@ import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
 import ControlledOpenSelect from './components/Select';
 import ClientChart from './components/ClientAnalysisChart';
+import Tabs, {Tab} from 'material-ui/Tabs';
+import ClientBreakdownChart from './components/ClientBreakdownChart';
+import styles from './Styles';
 
 const theme = createMuiTheme({
   palette: {
@@ -33,44 +36,36 @@ const theme = createMuiTheme({
   },
 });
 
-const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  generalPaper: {
-    marginLeft: 10,
-    paddingTop: 15,
-    paddingLeft: 10,
-    marginTop: 10,
-  },
-  tablePaper: {
-    marginLeft: 110,
-  }
-};
+
+function TabContainer(props) {
+  return (
+    <Typography component="div" style={{padding: 8 * 3}}>
+      {props.children}
+    </Typography>
+  );
+}
 
 class App extends Component {
   state = {
     data: [],
     products: [],
     user_types: [],
-    display_nps_chart: true,
     client_data: [],
-    display_client_chart: true,
+    surveys: [],
+    chart: 'surveyComparisons',
+    value: 0,
   };
 
   componentWillUpdate = (nextProps, nextState) => {
-    console.log('component will update');
     if (
       (this.props.dataSelect.product !== nextProps.dataSelect.product) ||
       (this.props.dataSelect.user_type !== nextProps.dataSelect.user_type)
     ) {
       if (nextProps.dataSelect.product === '') {
         // Get data from the surveys endpoint
-        const get_url = '/survey?users=' + nextProps.dataSelect.user_type;
-        console.log(get_url);
+        const get_url = '/survey_data?users=' + nextProps.dataSelect.user_type;
         axios.get(get_url)
           .then(res => {
-            console.log(res.data);
             this.setState({data: res.data});
           })
       }
@@ -78,22 +73,26 @@ class App extends Component {
       else {
         const get_url = '/product_data?product=' + nextProps.dataSelect.product +
           '&users=' + nextProps.dataSelect.user_type;
-        console.log(get_url);
         axios.get(get_url)
           .then(res => {
-            console.log(res.data);
             this.setState({data: res.data});
           })
       }
     }
+    if (this.props.dataSelect.survey !== nextProps.dataSelect.survey) {
+      const get_url = 'client_deltas?survey=' + nextProps.dataSelect.survey + '&users=all'
+      axios.get(get_url)
+        .then(res=> {
+          console.log(res.data);
+          this.setState({client_data: res.data});
+        })
+    }
   };
 
   componentWillMount() {
-    console.log('component will mount');
     // Get initial data - survey with no selections
-    axios.get('/survey?users=all')
+    axios.get('/survey_data?users=all')
       .then(res => {
-        console.log(res);
         this.setState({data: res.data});
       });
     // Get list of products for select purposes
@@ -107,76 +106,114 @@ class App extends Component {
         this.setState({user_types: res.data});
       });
     axios.get('/client_deltas?survey=2018%20February&users=all')
-      .then(res=> {
+      .then(res => {
         this.setState({client_data: res.data});
       });
+    axios.get('/surveys')
+      .then(res => {
+        this.setState({surveys: res.data});
+      });
   }
+
+  handleChange = (event, value) => {
+    this.setState({value});
+  };
 
   render() {
     const {classes} = this.props;
     return (
+      // App Bar
       <MuiThemeProvider theme={theme}>
         <div className={classes.root}>
-          <AppBar position="static" color="default">
+          <AppBar position="fixed" color="default">
             <Toolbar>
-              <Typography variant="title" color="inherit">
-                NPS Dashboard
-              </Typography>
+              <Grid item xs={2}>
+                <Typography variant="title" color="inherit">
+                  NPS Dashboard
+                </Typography>
+              </Grid>
+              <Grid item xs={10}>
+                <Tabs value={this.state.value} onChange={this.handleChange}>
+                  <Tab label={"Survey Comparisons"}/>
+                  <Tab label={"Client Comparisons"}/>
+                </Tabs>
+              </Grid>
             </Toolbar>
           </AppBar>
         </div>
 
-        <div>
-          <Grid container>
-              <Grid container className={classes.generalPaper}>
-                <Grid container className={classes.generalPaper}>
-                <Typography variant={'headline'}>Survey Comparisons</Typography>
-                </Grid>
-                {(this.state.display_nps_chart) ?
-                <Grid item xs={6} className={classes.generalPaper}>
-                  <Chart nps_data={this.state.data} width={800} height={300}/>
-                </Grid>
-                  :null }
-                <Grid item xs={2} className={classes.generalPaper}>
+        <div className={classes.content}>
+          {this.state.value === 0 &&
+          <TabContainer>
+            <Grid container className={classes.generalPaper}>
+
+              <Grid container>
+                <Grid item xs={6} md={2} className={classes.selectorContainer}>
                   <ControlledOpenSelect
                     menuList={this.state.products}
-                    instructions={'Select the Product to View'}
+                    instructions={'Select the product to view'}
                     name='product'
                     include_none={true}
                     val={this.props.dataSelect.product}
                   />
                 </Grid>
-                <Grid item xs={2} className={classes.generalPaper}>
+                <Grid item xs={6} md={2} className={classes.selectorContainer}>
                   <ControlledOpenSelect
                     menuList={this.state.user_types}
-                    instructions={'Select the user types to View'}
+                    instructions={'Select the user types to view'}
                     name='user'
                     include_none={false}
                     val={this.props.dataSelect.user_type}
                   />
                 </Grid>
               </Grid>
+
+              <Grid container className={classes.tablePaper}>
+                <Grid item lg={5}>
+
+                <Chart
+                  nps_data={this.state.data}
+                  width={650}
+                  height={300}
+                /></Grid>
+              <Grid item lg={5}>
+              <ClientBreakdownChart
+                  data={this.state.data}
+                  width={650}
+                  height={300}
+                />
+              </Grid>
+              </Grid>
               <Grid container className={classes.generalPaper}>
                 <Paper className={classes.tablePaper}>
-                <SimpleTable
-                  data={this.state.data}
-                />
+                  <SimpleTable
+                    data={this.state.data}
+                  />
                 </Paper>
               </Grid>
-              <Grid container className={classes.generalPaper}>
-                <Grid container className={classes.generalPaper}>
-                <Typography variant={'headline'}>Client Comparisons</Typography>
-                </Grid>
+            </Grid>
+          </TabContainer>}
 
-                <ClientChart
-                  data={this.state.client_data}
-                  width={1200}
-                  height={500}
-                  yaxis={this.state.products}
-                />
-              </Grid>
+          {this.state.value === 1 && <TabContainer>
+            <Grid container className={classes.selectorContainer}>
+              <ControlledOpenSelect
+              menuList={this.state.surveys}
+              instructions={'Select the survey to view'}
+              name={'survey'}
+              include_none={false}
+              val={this.props.dataSelect.survey}
+              />
+            </Grid>
+            <Grid container className={classes.chartContainer}>
+              <ClientChart
+                data={this.state.client_data}
+                width={1200}
+                height={500}
+                yaxis={this.state.products}
+              />
+            </Grid>
 
-          </Grid>
+          </TabContainer>}
         </div>
       </MuiThemeProvider>
     );

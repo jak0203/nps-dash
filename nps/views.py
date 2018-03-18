@@ -18,6 +18,24 @@ def survey_data(request):
 
 @require_http_methods(['GET'])
 @csrf_exempt
+def surveys(request):
+    result = ClientDeltas.objects.values('survey').distinct()
+    list_result = []
+    for entry in result:
+        e = entry['survey']
+        r = {
+            'value': e,
+            'display': e,
+        }
+        list_result.append(r)
+
+    # list_result = [entry['survey'] for entry in result]
+    return JsonResponse(list_result, safe=False)
+
+
+
+@require_http_methods(['GET'])
+@csrf_exempt
 def product_data(request):
     product = request.GET.get('product')
     user_type = request.GET.get('users')

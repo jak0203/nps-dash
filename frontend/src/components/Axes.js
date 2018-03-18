@@ -1,9 +1,9 @@
 import React from 'react'
 import Axis from './Axis'
 
-export default ({ scales, margins, svgDimensions }) => {
-  const { height, width } = svgDimensions
-;
+export default ({ scales, margins, svgDimensions, axisLabel }) => {
+  const { height, width } = svgDimensions;
+
   const xProps = {
     orient: 'Bottom',
     scale: scales.xScale,
@@ -18,10 +18,21 @@ export default ({ scales, margins, svgDimensions }) => {
     tickSize: width - margins.left - margins.right,
   };
 
+  const xLabel = (
+    <text
+      textAnchor={'middle'}
+      y={(height)}
+      x={((width + margins.left)/2)}
+          fontWeight={'bold'}
+    >{axisLabel}</text>
+  );
+
+
   return (
     <g>
       <Axis {...xProps} />
       <Axis {...yProps} />
+      {xLabel}
     </g>
   )
 }

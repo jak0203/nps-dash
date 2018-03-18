@@ -7,17 +7,7 @@ import {selectHandleChange} from "../actions/select";
 import {bindActionCreators} from "redux";
 
 import {connect} from 'react-redux';
-
-const styles = theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
-    overflowX: 'auto',
-  },
-  table: {
-    maxWidth: 690,
-  },
-});
+import styles from '../Styles';
 
 
 function SimpleTable(props) {
@@ -25,26 +15,30 @@ function SimpleTable(props) {
   const {data} = props;
 
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.tableRoot}>
       <Table className={classes.table}>
         <TableHead>
           <TableRow>
             <TableCell>Survey</TableCell>
             <TableCell numeric>Total Responses</TableCell>
-            <TableCell numeric>% Detractors</TableCell>
-            <TableCell numeric>% Neutral</TableCell>
-            <TableCell numeric>% Promoters</TableCell>
+            <TableCell numeric>Detractors</TableCell>
+            <TableCell numeric>Neutral</TableCell>
+            <TableCell numeric>Promoters</TableCell>
+            <TableCell numeric>Positve Clients</TableCell>
+            <TableCell numeric>Negative Clients</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.reverse().map(n => {
+          {data.concat().reverse().map(n => {
             return (
               <TableRow key={n.survey}>
                 <TableCell>{n.survey}</TableCell>
                 <TableCell numeric>{(n.total_responses)}</TableCell>
-                <TableCell numeric>{(n.percent_detractors).toFixed(2)}</TableCell>
-                <TableCell numeric>{(n.percent_neutral).toFixed(2)}</TableCell>
-                <TableCell numeric>{(n.percent_promoters).toFixed(2)}</TableCell>
+                <TableCell numeric>{(n.detractors)}</TableCell>
+                <TableCell numeric>{(n.neutral)}</TableCell>
+                <TableCell numeric>{(n.promoters)}</TableCell>
+                <TableCell numeric>{(n.num_clients_positive)}</TableCell>
+                <TableCell numeric>{(n.num_clients_negative)}</TableCell>
               </TableRow>
             );
           })}

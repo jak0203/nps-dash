@@ -10,17 +10,8 @@ import Typography from 'material-ui/Typography';
 import {connect} from 'react-redux';
 import {selectHandleChange} from '../actions/select';
 import {bindActionCreators} from "redux";
+import styles from '../Styles';
 
-const styles = theme => ({
-  button: {
-    display: 'block',
-    marginTop: theme.spacing.unit * 2,
-  },
-  formControl: {
-    margin: theme.spacing.unit,
-    minWidth: 120,
-  },
-});
 
 class ControlledOpenSelect extends React.Component {
   state = {

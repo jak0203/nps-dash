@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 
+
 export default class Circles extends Component {
   render() {
     const {scales, data } = this.props;
@@ -13,6 +14,8 @@ export default class Circles extends Component {
           cx={xScale(datum.nps_score)}
           cy={yScale(datum.products) + 0.5 * yScale.bandwidth()}
           r={(Math.abs(datum.delta_from_2016) / 100) * yScale.bandwidth()}
+          stroke='black'
+          strokeWidth={1}
         />
       )
     );

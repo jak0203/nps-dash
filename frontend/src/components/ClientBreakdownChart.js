@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { scaleBand, scaleLinear } from 'd3-scale'
 import Axes from './Axes';
-import Bars from './Bars';
+import ClientBars from './ClientBars';
 
 class Chart extends Component {
   constructor() {
@@ -13,9 +13,9 @@ class Chart extends Component {
   }
 
   render() {
-    let { nps_data}= this.props;
+    let { data }= this.props;
 
-    const margins = { top: 20, right: 15, bottom: 50, left: 120 };
+    const margins = { top: 20, right: 20, bottom: 50, left: 120 };
     const svgDimensions = { width: this.props.width, height: this.props.height };
 
     const xScale = this.xScale
@@ -24,7 +24,7 @@ class Chart extends Component {
 
     const yScale = this.yScale
       .padding(0.3)
-      .domain(nps_data.map(d => d.survey))
+      .domain(data.map(d => d.survey))
       .range([svgDimensions.height - margins.bottom, margins.top]);
 
 
@@ -34,12 +34,12 @@ class Chart extends Component {
           scales={{ xScale, yScale }}
           margins={margins}
           svgDimensions={svgDimensions}
-          axisLabel={'NPS Score'}
+          axisLabel={'Percent of Clients'}
         />
-        <Bars
+        <ClientBars
           scales={{ xScale, yScale }}
           margins={margins}
-          data={nps_data}
+          data={data}
           svgDimensions={svgDimensions}
         />
       </svg>
