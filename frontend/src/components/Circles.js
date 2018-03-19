@@ -9,7 +9,7 @@ export default class Circles extends Component {
     const circles = (
       data.map(datum =>
         <circle
-          fill={(datum.delta_from_2016 < 0 ) ? 'red' : 'green'}
+          fill={(datum.delta_from_2016 < 0 ) ? '#F44336' : '#4CAF50'}
           key={datum.client}
           cx={xScale(datum.nps_score)}
           cy={yScale(datum.products) + 0.5 * yScale.bandwidth()}
