@@ -35,6 +35,7 @@ class Chart extends Component {
           margins={margins}
           svgDimensions={svgDimensions}
           axisLabel={'NPS Score'}
+          graphTitle={'NPS Breakdown'}
         />
         <Bars
           scales={{ xScale, yScale }}

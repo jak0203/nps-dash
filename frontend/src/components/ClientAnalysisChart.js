@@ -37,6 +37,7 @@ class ClientChart extends Component {
           margins={margins}
           svgDimensions={svgDimensions}
           axisLabel={'NPS Score'}
+          graphTitle={'Client NPS Change'}
         />
         <Circles
           scales={{ xScale, yScale }}

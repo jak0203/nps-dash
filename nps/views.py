@@ -19,7 +19,7 @@ def survey_data(request):
 @require_http_methods(['GET'])
 @csrf_exempt
 def surveys(request):
-    result = ClientDeltas.objects.values('survey').distinct()
+    result = ClientDeltas.objects.values('survey').order_by('survey').distinct()
     list_result = []
     for entry in result:
         e = entry['survey']
@@ -71,8 +71,7 @@ def client_data(request):
 def client_deltas(request):
     survey = request.GET.get('survey')
     user_type = request.GET.get('users')
-
-    result = ClientDeltas.objects.filter(survey=survey, user_type=user_type).order_by('delta_from_2016').values()
+    result = ClientDeltas.objects.filter(survey=survey, user_type=user_type).extra(select={'absolutevalue': 'abs(delta_from_2016)'}).order_by('-absolutevalue').values()
     list_result = [entry for entry in result]
     return JsonResponse(list_result, safe=False)
 

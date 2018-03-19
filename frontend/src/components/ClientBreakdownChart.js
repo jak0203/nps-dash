@@ -35,6 +35,7 @@ class Chart extends Component {
           margins={margins}
           svgDimensions={svgDimensions}
           axisLabel={'Percent of Clients'}
+          graphTitle={'Client NPS Breakdown'}
         />
         <ClientBars
           scales={{ xScale, yScale }}

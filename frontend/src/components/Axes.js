@@ -1,7 +1,9 @@
 import React from 'react'
 import Axis from './Axis'
 
-export default ({ scales, margins, svgDimensions, axisLabel }) => {
+import './Axis.css'
+
+export default ({ scales, margins, svgDimensions, axisLabel, graphTitle }) => {
   const { height, width } = svgDimensions;
 
   const xProps = {
@@ -27,12 +29,23 @@ export default ({ scales, margins, svgDimensions, axisLabel }) => {
     >{axisLabel}</text>
   );
 
+   const GraphTitle = (
+    <text
+      fontSize={18}
+      textAnchor={'middle'}
+      y={(margins.top - 5)}
+      x={((width)/2)}
+      fontWeight={'bold'}
+    >{graphTitle}</text>
+  );
+
 
   return (
     <g>
       <Axis {...xProps} />
       <Axis {...yProps} />
       {xLabel}
+      {GraphTitle}
     </g>
   )
 }

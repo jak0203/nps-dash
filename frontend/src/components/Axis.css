@@ -13,3 +13,7 @@
   transform: rotate(-45deg);
   text-anchor: end;
 }
+
+.Axis-Title text {
+  font-size: 18px
+}
